@@ -13,7 +13,9 @@ $(document).ready(() => {
   const searchForm = $('#search-form');
   const gallery = $('.gallery');
   const loadMoreButton = $('.load-more');
+    
 
+// Обробник подання форми пошуку
   searchForm.submit((event) => {
     event.preventDefault();
     gallery.empty();
@@ -22,6 +24,8 @@ $(document).ready(() => {
     searchImages(searchQuery, currentPage);
   });
     
+    
+ // Обробник події прокрутки сторінки
   $(window).scroll(() => {
     if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
       currentPage += 1;
@@ -29,25 +33,29 @@ $(document).ready(() => {
     }
   });
 
-  function searchImages(query, page) {
+    
+    // Функція для пошуку зображень
+  async function searchImages(query, page) {
     const apiUrl = `https://pixabay.com/api/?key=${apiKey}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`;
 
-    axios.get(apiUrl)
-      .then((response) => {
-        const data = response.data;
-        if (data.hits.length === 0) {
-          Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-        } else {
-          renderImages(data.hits);
-          Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        Notiflix.Notify.failure('An error occurred while fetching images.');
-      });
+    try {
+      const response = await axios.get(apiUrl);
+      const data = response.data;
+
+      if (data.hits.length === 0) {
+        Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+      } else {
+        renderImages(data.hits);
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Notiflix.Notify.failure('An error occurred while fetching images.');
+    }
   }
 
+    
+    // Функція для відображення зображень
   function renderImages(images) {
     images.forEach((image) => {
       const photoCard = $('<div class="photo-card"></div>');
@@ -70,6 +78,8 @@ $(document).ready(() => {
     lightbox.refresh();
   }
 
+    
+     // Функція для створення блоку інформації про зображення
   function createInfoItem(label, value) {
     return $(`<p class="info-item"><b>${label}:</b> ${value}</p>`);
   }
