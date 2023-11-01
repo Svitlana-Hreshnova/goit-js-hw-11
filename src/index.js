@@ -10,6 +10,7 @@ let currentPage = 1;
 let searchQuery = '';
 let totalHits = 0;
 let isFetching = false;
+let hasShownMessage = false; 
 
 $(document).ready(() => {
   const searchForm = $('#search-form');
@@ -56,7 +57,10 @@ $(document).ready(() => {
           Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
           $(window).off('scroll');
         } else {
-          Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+          if (!hasShownMessage) {
+            Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+            hasShownMessage = true;
+          }
           isFetching = false;
         }
       }
@@ -74,10 +78,10 @@ $(document).ready(() => {
       const link = $(`<a href="${image.largeImageURL}" title="${image.tags}" data-lightbox="gallery"></a>`);
       const img = $(`<img src="${image.webformatURL}" alt="${image.tags}" loading="lazy">`);
       const info = $('<div class="info"></div>');
-      const likes = createInfoItem('Лайки', image.likes);
-      const views = createInfoItem('Перегляди', image.views);
-      const comments = createInfoItem('Коментарі', image.comments);
-      const downloads = createInfoItem('Завантаження', image.downloads);
+      const likes = createInfoItem('Likes', image.likes);
+      const views = createInfoItem('Views', image.views);
+      const comments = createInfoItem('Comments', image.comments);
+      const downloads = createInfoItem('Downloads', image.downloads);
 
       info.append(likes, views, comments, downloads);
       link.append(img);
